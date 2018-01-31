@@ -35,8 +35,11 @@ hash_this(uint8_t *const data, t_opt *const options) {
 		6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21
 	};
 	for (int32_t o = 0; o < 64; o++) {k[o] = floor((fabs(sin(o+1))) * 4294967296);}
-	for (int32_t offset = 0; offset < options->new_size; offset += 64) {
-		memcpy(w, &data[offset], 64);
+	for (uint64_t offset = 0; offset < options->new_size / 4; offset += 16) {
+		for (uint32_t i = 0; i < 16; ++i) {
+			w[i] = ((uint32_t*)data)[offset + i];
+		}
+		// memcpy(w, &data[offset], 64);
 		for (int32_t i = 0; i < 64; i++) {
 			if (i < 16) {
 				f = (b & c) | (~b & d);
@@ -66,10 +69,13 @@ hash_this(uint8_t *const data, t_opt *const options) {
 		c = h2;
 		d = h3;
 	}
-	printf("%08x%08x%08x%08x\n", SWAP(h0), SWAP(h1), SWAP(h2), SWAP(h3));
-	if (options->options & OPT_FILE)
+	if (options->options & OPT_FILE) {
+		printf("MD5 (%s)= %08x%08x%08x%08x\n", options->filename, SWAP(h0), SWAP(h1), SWAP(h2), SWAP(h3));
 		munmap((void*)data, options->size);
-	else
+	}
+	else {
+		printf("%08x%08x%08x%08x\n", SWAP(h0), SWAP(h1), SWAP(h2), SWAP(h3));
 		free((void*)data);
+	}
 	return (0);
 }

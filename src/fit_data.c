@@ -8,9 +8,9 @@
 
 uint8_t*
 fit_data(uint8_t const *data, t_opt *options) {
-	if (options->size % 64 == 0) {
-		return ((uint8_t*)data);
-	} else {
+	// if (options->size % 64 == 0) {
+	// 	return ((uint8_t*)data);
+	// } else {
 		uint8_t	*new_data = NULL;
 		options->new_size = ((options->size / 64) + 1) * 64;
 
@@ -34,5 +34,5 @@ fit_data(uint8_t const *data, t_opt *options) {
 		else
 			free((void*)data);
 		return (new_data);
-	}
+	// }
 }
