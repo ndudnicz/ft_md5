@@ -70,7 +70,7 @@ hash_this(uint8_t *const data, t_opt *const options) {
 		d = h3;
 	}
 	if (options->options & OPT_FILE) {
-		printf("MD5 (%s)= %08x%08x%08x%08x\n", options->filename, SWAP(h0), SWAP(h1), SWAP(h2), SWAP(h3));
+		printf("MD5 (%s) = %08x%08x%08x%08x\n", options->filename, SWAP(h0), SWAP(h1), SWAP(h2), SWAP(h3));
 		munmap((void*)data, options->size);
 	}
 	else {
