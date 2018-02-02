@@ -1,0 +1,2 @@
+#!/bin/sh
+time ./ft_md5 -f $1 && time md5 $1

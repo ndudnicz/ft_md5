@@ -2,7 +2,7 @@ NAME = ft_md5
 
 CC = gcc
 
-FLAGS = -Wextra -Wall -Werror
+FLAGS = -Wextra -Wall -Werror -Ofast
 
 PATH_SRC = src
 
