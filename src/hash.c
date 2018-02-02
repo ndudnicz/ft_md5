@@ -76,10 +76,10 @@ hash_this(uint8_t *const data, t_opt *const options) {
 	uint32_t	w[16];
 	for (int32_t o = 0; o < 64; o++) {k[o] = floor((fabs(sin(o+1))) * 4294967296);}
 	for (uint64_t offset = 0; offset < options->new_size / 4; offset += 16) {
-		// for (uint32_t i = 0; i < 16; ++i) {
-		// 	w[i] = ((uint32_t*)data)[offset + i];
-		// }
-		memcpy(w, &data[offset], 64);
+		for (uint32_t i = 0; i < 16; ++i) {
+			w[i] = ((uint32_t*)data)[offset + i];
+		}
+		// memcpy(w, &data[offset], 64);
 		// for (int32_t i = 0; i < 64; i++) {
 		// 	if (i < 16) {
 		// 		// f = (b & c) | (~b & d);
