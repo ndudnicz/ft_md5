@@ -20,44 +20,36 @@ static int32_t r[64] = {
 	6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21
 };
 
-#define STEP0_15(tmp, i, f, g, a, b, c, d, k, w, r) do { \
-	f = (b & c) | (~b & d); \
-	g = i; \
+#define ENDSTEP(tmp, i, f, g, a, b, c, d, k, w, r) do { \
 	tmp = d; \
 	d = c; \
 	c = b; \
 	b = LEFTROTATE(a + f + k[i] + w[g], r[i]) + b; \
 	a = tmp; \
+} while (0);
+
+#define STEP0_15(tmp, i, f, g, a, b, c, d, k, w, r) do { \
+	f = (b & c) | (~b & d); \
+	g = i; \
+	ENDSTEP(tmp, i, f, g, a, b, c, d, k, w, r) \
 } while (0);
 
 #define STEP16_31(tmp, i, f, g, a, b, c, d, k, w, r) do { \
 	f = (d & b) | (~d & c); \
-	g = ((5 * i) + 1) & 0x10; \
-	tmp = d; \
-	d = c; \
-	c = b; \
-	b = LEFTROTATE(a + f + k[i] + w[g], r[i]) + b; \
-	a = tmp; \
+	g = ((5 * i) + 1) % 16; \
+	ENDSTEP(tmp, i, f, g, a, b, c, d, k, w, r) \
 } while (0);
 
 #define STEP32_47(tmp, i, f, g, a, b, c, d, k, w, r) do { \
 	f = b ^ c ^ d; \
-	g = ((3 * i) + 5) & 0x10; \
-	tmp = d; \
-	d = c; \
-	c = b; \
-	b = LEFTROTATE(a + f + k[i] + w[g], r[i]) + b; \
-	a = tmp; \
+	g = ((3 * i) + 5) % 16; \
+	ENDSTEP(tmp, i, f, g, a, b, c, d, k, w, r) \
 } while (0);
 
 #define STEP48_63(tmp, i, f, g, a, b, c, d, k, w, r) do { \
 	f = c ^ (b | ~d); \
-	g = (7 * i) & 0x10; \
-	tmp = d; \
-	d = c; \
-	c = b; \
-	b = LEFTROTATE(a + f + k[i] + w[g], r[i]) + b; \
-	a = tmp; \
+	g = (7 * i) % 16; \
+	ENDSTEP(tmp, i, f, g, a, b, c, d, k, w, r) \
 } while (0);
 
 int
@@ -79,28 +71,7 @@ hash_this(uint8_t *const data, t_opt *const options) {
 		for (uint32_t i = 0; i < 16; ++i) {
 			w[i] = ((uint32_t*)data)[offset + i];
 		}
-		// memcpy(w, &data[offset], 64);
-		// for (int32_t i = 0; i < 64; i++) {
-		// 	if (i < 16) {
-		// 		// f = (b & c) | (~b & d);
-		// 		// g = i;
-		// 	} else if (i < 32) {
-		// 		// f = (d & b) | (~d & c);
-		// 		// g = ((5 * i) + 1) & 0x10;
-		// 	} else if (i < 48) {
-		// 		// f = b ^ c ^ d;
-		// 		// g = ((3 * i) + 5) & 0x10;
-		// 	} else {
-		// 		// f = c ^ (b | ~d);
-		// 		// g = (7 * i) & 0x10;
-		// 	}
-		// 	tmp = d;
-		// 	d = c;
-		// 	c = b;
-		// 	b = LEFTROTATE(a + f + k[i] + w[g], r[i]) + b;
-		// 	a = tmp;
-		// }
-		STEP0_15(tmp, 0, f, g, b, a, c, d, k, w, r)
+		STEP0_15(tmp, 0, f, g, b,a, c, d, k, w, r)
 		STEP0_15(tmp, 1, f, g, b,a, c, d, k, w, r)
 		STEP0_15(tmp, 2, f, g, b,a, c, d, k, w, r)
 		STEP0_15(tmp, 3, f, g, b,a, c, d, k, w, r)
@@ -167,11 +138,6 @@ hash_this(uint8_t *const data, t_opt *const options) {
 		STEP48_63(tmp, 61, f, g, a, b, c, d, k, w, r)
 		STEP48_63(tmp, 62, f, g, a, b, c, d, k, w, r)
 		STEP48_63(tmp, 63, f, g, a, b, c, d, k, w, r)
-		// tmp = d;
-		// d = c;
-		// c = b;
-		// b = LEFTROTATE(a + f + k[i] + w[g], r[i]) + b;
-		// a = tmp;
 		h0 += a;
 		h1 += b;
 		h2 += c;
